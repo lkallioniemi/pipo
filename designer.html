@@ -1,0 +1,115 @@
+<html>
+	<head>
+		<title></title>
+		<script type="application/x-javascript">
+			var baseImage = new Image();
+			var color1 = new Image();
+			var color2 = new Image();
+
+			window.onload = function(){
+								
+				baseImage.src = "squared_2.jpg";
+				baseImage.onload = function(){
+					color1.src = "alpha3.png";
+					color1.onload = function(){
+						color2.src = "stripes4.png";
+						color2.onload = function(){
+							composeImage(200, 0, 0 , 0, 200, 0);
+						};
+					};
+				};
+			};
+
+			function composeImage(red1, green1, blue1, red2, green2, blue2){
+				var imageCanvas = document.createElement('canvas');
+				imageCanvas.height = baseImage.height;
+				imageCanvas.width = baseImage.width;
+				
+				var context = imageCanvas.getContext("2d");
+				context.drawImage(baseImage, 0, 0);
+				
+				var BaseimageData = context.getImageData(0, 0, baseImage.width, baseImage.height);
+				context.clearRect ( 0 , 0 , baseImage.width , baseImage.height );
+				context.drawImage(color1, 0, 0);
+				var Color1Data = context.getImageData(0, 0, baseImage.width, baseImage.height);
+
+				context.clearRect ( 0 , 0 , baseImage.width , baseImage.height );
+				context.drawImage(color2, 0, 0);
+				var Color2Data = context.getImageData(0, 0, baseImage.width, baseImage.height);
+				
+				context.putImageData(BaseimageData, 0, 0);
+				
+				/* composite color 1 */
+				
+				var color = [red1, green1, blue1];
+				
+				var imageData = context.getImageData(0, 0, baseImage.width, baseImage.height);
+				
+				var data1 = imageData.data;
+				var data2 = Color1Data.data;
+				
+				for (var i = 0; i < data1.length; i += 4) {
+					if (data2[i] > 0){
+						data1[i] = ((color[0]*(data2[i]/255))); // red
+						data1[i + 1] =  ((color[1]*(data2[i]/255))); // green
+						data1[i + 2] =  ((color[2]*(data2[i]/255))); // blue
+						//if (data2[i] > 2) { data1[i+3] = 0; } else { data1[i+3]=255; }
+					}
+				}
+				context.putImageData(imageData, 0, 0);
+				
+				var CompositeColor1Data = context.getImageData(0, 0, baseImage.width, baseImage.height);
+				
+				/* composite color 2 */
+				
+				var color = [red2, green2, blue2];
+				
+				var imageData = context.getImageData(0, 0, baseImage.width, baseImage.height);
+				
+				var data1 = imageData.data;
+				var data2 = Color2Data.data;
+				
+				for (var i = 0; i < data1.length; i += 4) {
+					if (data2[i] > 0){
+						data1[i] = ((color[0]*(data2[i]/255))); // red
+						data1[i + 1] =  ((color[1]*(data2[i]/255))); // green
+						data1[i + 2] =  ((color[2]*(data2[i]/255))); // blue
+						if (data2[i] < 50 && data2[i] > 100 ) { data1[i+3] = 0; } else { data1[i+3]=255; }
+					}
+				}
+				context.putImageData(imageData, 0, 0);
+				
+				var CompositeColor2Data = context.getImageData(0, 0, baseImage.width, baseImage.height);
+			
+
+				context.putImageData(BaseimageData, 0, 0);
+				context.putImageData(CompositeColor1Data, 0, 0);
+				context.putImageData(CompositeColor2Data, 0, 0);
+				
+				var finalComp = context.getImageData(0, 0, baseImage.width, baseImage.height);
+				context.clearRect ( 0 , 0 , baseImage.width , baseImage.height );
+				
+				
+				context.putImageData(finalComp, 0, 0);
+				document.body.appendChild(imageCanvas);
+			};
+		</script>
+	</head>
+	<body>
+		<form action="#" onsubmit="composeImage(this.red1.value, this.green1.value,this.blue1.value,this.red2.value,this.green2.value,this.blue2.value); return false;">
+			<fieldset>
+				<legend>Base color</legend>
+				<label for="red1">R</label><input type="text" name="red1" value="200" />
+				<label for="green1">G</label><input type="text" name="green1" value="0" />
+				<label for="blue1">B</label><input type="text" name="blue1" value="0" />
+			</fieldset>
+			<fieldset>
+				<legend>Stripes</legend>
+				<label for="red2">R</label><input type="text" name="red2" value="0" />
+				<label for="green2">G</label><input type="text" name="green2" value="200" />
+				<label for="blue2">B</label><input type="text" name="blue2" value="0" />
+			</fieldset>
+			<input type="submit" value="test" />
+		</form>
+	</body>
+</html>

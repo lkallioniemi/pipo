@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<script type="text/javascript">
+			window.onload = function(){
+				var baseImage = new Image();
+				baseImage.src = "squared_2.jpg";
+				baseImage.onload = function(){
+					render(this);
+				}
+				
+				var color1 = [86, 22, 13];
+				var color2 = [255, 255, 255];
+				
+				var new_color1 = [77, 85, 99];
+				var new_color2 = [140, 89, 34];
+				
+				function render(image){
+					var imageCanvas = document.createElement('canvas')
+					imageCanvas.height = image.height;
+					imageCanvas.width = image.width;
+					var context = imageCanvas.getContext("2d");
+					context.drawImage(image, 0, 0);
+					var imageData = context.getImageData(0, 0, baseImage.width, baseImage.height);
+					var data = imageData.data;
+					for (var i = 0; i < data.length; i += 4) {
+						data[i] =  data[i];
+						data[i+1] = data[i];
+						data[i+2] = data[i];
+					}
+					context.putImageData(imageData, 0, 0);
+					document.body.appendChild(imageCanvas);
+				}
+			}		
+		</script>
+	</head>
+	<body>
+		
+	</body>
+</html>
